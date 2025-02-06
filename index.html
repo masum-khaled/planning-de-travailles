@@ -93,10 +93,13 @@
         }
         /* For mobile view */
         @media (max-width: 600px) {
-            .inline-block input {
-                width: 100%;
+            .inline-block input, 
+            .inline-block select {
+                width: 100%;  /* Ensures full width on mobile */
+                min-width: 0; /* Ensure it doesn't have any minimum width when the screen is small */
             }
         }
+
     </style>
 </head>
 <body>
