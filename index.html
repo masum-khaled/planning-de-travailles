@@ -26,7 +26,85 @@
             margin-bottom: 15px;
             text-transform: uppercase;
         }
-        form {
+        /* Basic Form Layout */
+form {
+    max-width: 100%; /* Ensures form doesn't exceed screen width */
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-sizing: border-box;
+}
+
+/* Inline block for 2-column layout */
+.inline-block {
+    display: grid; /* Use grid for column layout */
+    grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+    gap: 15px; /* Add some space between columns */
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* Style for each input, select, and label */
+.inline-block input,
+.inline-block select {
+    width: 100%; /* Full width for inputs and selects */
+    min-width: 0;
+    box-sizing: border-box; /* Include padding/borders in width */
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Responsive Adjustments for Mobile View */
+@media (max-width: 600px) {
+    .inline-block {
+        grid-template-columns: 1fr; /* Single column on mobile */
+        gap: 10px; /* Reduce gap between inputs */
+    }
+
+    .inline-block input, 
+    .inline-block select {
+        width: 100%;  /* Ensure full width for each input on mobile */
+    }
+}
+
+button {
+    padding: 15px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #58a6ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    width: 100%;  /* Button takes full width */
+}
+
+button:hover {
+    background-color: #6e7dff;
+}
+
+#message {
+    font-weight: bold;
+    margin-top: 15px;
+    color: #58a6ff;
+    text-align: center;
+}
+
+/*         form {
             max-width: 700px;
             margin: 40px auto;
             background: #fff;
@@ -90,7 +168,7 @@
             margin-top: 15px;
             color: #58a6ff;
             text-align: center;
-        }
+        } */
         /* For mobile view */
         @media (max-width: 600px) {
             .inline-block input, 
