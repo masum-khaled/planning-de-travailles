@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificateur de Travail</title>
     <style>
-        /* Styling as before */
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #6e7dff, #58a6ff);
@@ -89,14 +88,6 @@
         .full-width {
             grid-column: span 2;
         }
-        .month-total {
-            margin-top: 20px;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            color: black;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -161,30 +152,9 @@
     <p id="message"></p>
     <div id="entries"></div>
 
-    <!-- New Section to select month and see total hours -->
-    <div id="monthSelector">
-        <h3>Sélectionner un mois pour voir les heures totales :</h3>
-        <select id="monthSelect">
-            <option value="">Sélectionner un mois</option>
-            <option value="01">Janvier</option>
-            <option value="02">Février</option>
-            <option value="03">Mars</option>
-            <option value="04">Avril</option>
-            <option value="05">Mai</option>
-            <option value="06">Juin</option>
-            <option value="07">Juillet</option>
-            <option value="08">Août</option>
-            <option value="09">Septembre</option>
-            <option value="10">Octobre</option>
-            <option value="11">Novembre</option>
-            <option value="12">Décembre</option>
-        </select>
-        <div id="totalHoursForMonth" class="month-total"></div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBs2htpK...",
@@ -240,44 +210,16 @@
             }
         });
 
-        document.getElementById("monthSelect").addEventListener("change", function() {
-            let selectedMonth = this.value;
-            if (selectedMonth) {
-                loadTotalHoursForMonth(selectedMonth);
-            }
-        });
-
-        async function loadTotalHoursForMonth(month) {
-            const q = query(collection(db, "work_entries"), where("mois", "==", month));
-            const querySnapshot = await getDocs(q);
-            let totalHours = 0;
-            querySnapshot.forEach((doc) => {
-                let entry = doc.data();
-                totalHours += parseFloat(entry.total);
-            });
-
-            document.getElementById("totalHoursForMonth").innerText = `Total des heures pour ce mois: ${totalHours.toFixed(2)} heures`;
-        }
-
         async function loadEntries() {
             const querySnapshot = await getDocs(collection(db, "work_entries"));
-            let entries = [];
+            let output = "<h3>Entrées enregistrées</h3><table><thead><tr><th>Date</th><th>Jour</th><th>Lieu</th><th>Heure de début</th><th>Heure de fin</th><th>Total des heures</th></tr></thead><tbody>";
             querySnapshot.forEach((doc) => {
                 let entry = doc.data();
-                entry.id = doc.id;
-                entries.push(entry);
-            });
-            displayEntries(entries);
-        }
-
-        function displayEntries(entries) {
-            let output = "<h3>Entrées enregistrées</h3><table><thead><tr><th>Date</th><th>Jour</th><th>Lieu</th><th>Heure de début</th><th>Heure de fin</th><th>Total des heures</th></tr></thead><tbody>";
-            entries.forEach(entry => {
                 let formattedDate = new Date(entry.date).toLocaleDateString('fr-FR', {
                     day: '2-digit', 
                     month: 'short', 
                     year: 'numeric'
-                }).replace('.', '');
+                }).replace('.', '');  // Remove the dot after month
                 output += `<tr>
                     <td>${formattedDate}</td>
                     <td>${entry.jour}</td>
