@@ -15,28 +15,38 @@
         }
         h2 {
             margin-top: 30px;
+            font-size: 2em;
+            color: white;
         }
         form {
             max-width: 600px;
             margin: 20px auto;
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             color: black;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
-        input, select {
+        input, select, button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
-            border-radius: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+        input[type="date"], input[type="time"], select {
+            background-color: #f4f7fa;
+        }
+        input[type="text"], input[type="time"], select {
+            background-color: #f4f7fa;
         }
         button {
             background-color: #58a6ff;
             color: white;
-            padding: 10px;
-            border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border: none;
+            transition: background-color 0.3s ease;
         }
         button:hover {
             background-color: #6e7dff;
@@ -55,7 +65,7 @@
             border-collapse: collapse;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
@@ -65,6 +75,12 @@
         }
         tr:hover {
             background-color: #f1f1f1;
+        }
+        label {
+            font-size: 1.2em;
+            margin-top: 10px;
+            display: block;
+            text-align: left;
         }
     </style>
 </head>
@@ -90,21 +106,32 @@
 
         <label for="date">Date</label>
         <input type="date" id="date" required>
+        
         <label for="jour">Jour</label>
         <input type="text" id="jour" readonly>
+        
         <label for="lieu">Lieu</label>
-        <input type="text" id="lieu" required>
+        <select id="lieu" required>
+            <option value="">Sélectionner un lieu</option>
+            <option value="Entreprise">Entreprise</option>
+            <option value="L'école">L'école</option>
+            <option value="Repos">Repos</option>
+        </select>
+
         <label for="debut">Heure de début</label>
         <input type="time" id="debut" required>
+        
         <label for="fin">Heure de fin</label>
         <input type="time" id="fin" required>
+        
         <label for="total">Total des heures</label>
         <input type="text" id="total" readonly>
+        
         <button type="submit">Soumettre</button>
     </form>
     <p id="message"></p>
     <div id="entries"></div>
-    
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
