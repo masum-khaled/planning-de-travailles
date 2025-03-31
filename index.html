@@ -215,8 +215,13 @@
             let output = "<h3>Entrées enregistrées</h3><table><thead><tr><th>Date</th><th>Jour</th><th>Lieu</th><th>Heure de début</th><th>Heure de fin</th><th>Total des heures</th></tr></thead><tbody>";
             querySnapshot.forEach((doc) => {
                 let entry = doc.data();
+                let formattedDate = new Date(entry.date).toLocaleDateString('fr-FR', {
+                    day: '2-digit', 
+                    month: 'short', 
+                    year: 'numeric'
+                }).replace('.', '');  // Remove the dot after month
                 output += `<tr>
-                    <td>${entry.date}</td>
+                    <td>${formattedDate}</td>
                     <td>${entry.jour}</td>
                     <td>${entry.lieu}</td>
                     <td>${entry.debut}</td>
