@@ -19,13 +19,16 @@
             color: white;
         }
         form {
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             background: white;
             padding: 30px;
             border-radius: 10px;
             color: black;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
         input, select, button {
             width: 100%;
@@ -47,6 +50,7 @@
             cursor: pointer;
             border: none;
             transition: background-color 0.3s ease;
+            grid-column: span 2;
         }
         button:hover {
             background-color: #6e7dff;
@@ -82,51 +86,68 @@
             display: block;
             text-align: left;
         }
+        .full-width {
+            grid-column: span 2;
+        }
     </style>
 </head>
 <body>
     <h2>Planificateur de Travail</h2>
     <form id="workForm">
-        <label for="mois">Mois</label>
-        <select id="mois" required>
-            <option value="">Sélectionner un mois</option>
-            <option value="01">Janvier</option>
-            <option value="02">Février</option>
-            <option value="03">Mars</option>
-            <option value="04">Avril</option>
-            <option value="05">Mai</option>
-            <option value="06">Juin</option>
-            <option value="07">Juillet</option>
-            <option value="08">Août</option>
-            <option value="09">Septembre</option>
-            <option value="10">Octobre</option>
-            <option value="11">Novembre</option>
-            <option value="12">Décembre</option>
-        </select>
+        <div>
+            <label for="mois">Mois</label>
+            <select id="mois" required>
+                <option value="">Sélectionner un mois</option>
+                <option value="01">Janvier</option>
+                <option value="02">Février</option>
+                <option value="03">Mars</option>
+                <option value="04">Avril</option>
+                <option value="05">Mai</option>
+                <option value="06">Juin</option>
+                <option value="07">Juillet</option>
+                <option value="08">Août</option>
+                <option value="09">Septembre</option>
+                <option value="10">Octobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Décembre</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="date">Date</label>
+            <input type="date" id="date" required>
+        </div>
+        
+        <div>
+            <label for="jour">Jour</label>
+            <input type="text" id="jour" readonly>
+        </div>
+        
+        <div>
+            <label for="lieu">Lieu</label>
+            <select id="lieu" required>
+                <option value="">Sélectionner un lieu</option>
+                <option value="Entreprise">Entreprise</option>
+                <option value="L'école">L'école</option>
+                <option value="Repos">Repos</option>
+            </select>
+        </div>
 
-        <label for="date">Date</label>
-        <input type="date" id="date" required>
+        <div>
+            <label for="debut">Heure de début</label>
+            <input type="time" id="debut" required>
+        </div>
         
-        <label for="jour">Jour</label>
-        <input type="text" id="jour" readonly>
+        <div>
+            <label for="fin">Heure de fin</label>
+            <input type="time" id="fin" required>
+        </div>
         
-        <label for="lieu">Lieu</label>
-        <select id="lieu" required>
-            <option value="">Sélectionner un lieu</option>
-            <option value="Entreprise">Entreprise</option>
-            <option value="L'école">L'école</option>
-            <option value="Repos">Repos</option>
-        </select>
+        <div class="full-width">
+            <label for="total">Total des heures</label>
+            <input type="text" id="total" readonly>
+        </div>
 
-        <label for="debut">Heure de début</label>
-        <input type="time" id="debut" required>
-        
-        <label for="fin">Heure de fin</label>
-        <input type="time" id="fin" required>
-        
-        <label for="total">Total des heures</label>
-        <input type="text" id="total" readonly>
-        
         <button type="submit">Soumettre</button>
     </form>
     <p id="message"></p>
