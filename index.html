@@ -29,6 +29,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+            box-sizing: border-box;
         }
         input, select, button {
             width: 100%;
@@ -37,11 +38,9 @@
             border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 1em;
+            box-sizing: border-box; /* Ensure padding is inside the element's width */
         }
         input[type="date"], input[type="time"], select {
-            background-color: #f4f7fa;
-        }
-        input[type="text"], input[type="time"], select {
             background-color: #f4f7fa;
         }
         button {
