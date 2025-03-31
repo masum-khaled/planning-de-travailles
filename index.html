@@ -89,11 +89,9 @@
     <div id="entries"></div>
     
     <script type="module">
-        // Import Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-        // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBs2htpK...",
             authDomain: "planning-de-travail.firebaseapp.com",
@@ -104,9 +102,28 @@
             measurementId: "G-7LGF7NQ00W"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        document.getElementById("date").addEventListener("change", function() {
+            let dateValue = new Date(this.value);
+            let jour = dateValue.toLocaleDateString("fr-FR", { weekday: 'long' });
+            document.getElementById("jour").value = jour;
+        });
+
+        document.getElementById("debut").addEventListener("change", calculateTotalHours);
+        document.getElementById("fin").addEventListener("change", calculateTotalHours);
+
+        function calculateTotalHours() {
+            let debut = document.getElementById("debut").value;
+            let fin = document.getElementById("fin").value;
+            if (debut && fin) {
+                let start = new Date("1970-01-01T" + debut + "Z");
+                let end = new Date("1970-01-01T" + fin + "Z");
+                let diff = (end - start) / (1000 * 60 * 60);
+                document.getElementById("total").value = diff.toFixed(2);
+            }
+        }
 
         document.getElementById("workForm").addEventListener("submit", async function(event) {
             event.preventDefault();
@@ -132,26 +149,12 @@
         async function loadEntries() {
             const querySnapshot = await getDocs(collection(db, "work_entries"));
             let output = "<h3>Entrées enregistrées</h3><ul>";
-            let csvContent = "Date,Jour,Lieu,Début,Fin,Total Heures\n";
-            
             querySnapshot.forEach((doc) => {
                 let entry = doc.data();
                 output += `<li>${entry.date} - ${entry.jour} - ${entry.lieu} (${entry.debut} à ${entry.fin}, ${entry.total} heures)</li>`;
-                csvContent += `${entry.date},${entry.jour},${entry.lieu},${entry.debut},${entry.fin},${entry.total}\n`;
             });
-            
-            output += "</ul><button onclick='downloadCSV()'>Télécharger CSV</button>";
+            output += "</ul>";
             document.getElementById("entries").innerHTML = output;
-            localStorage.setItem("csvData", csvContent);
-        }
-
-        function downloadCSV() {
-            let csvData = localStorage.getItem("csvData");
-            let blob = new Blob([csvData], { type: "text/csv" });
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "work_entries.csv";
-            a.click();
         }
 
         window.onload = loadEntries;
