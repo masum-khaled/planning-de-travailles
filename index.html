@@ -160,11 +160,31 @@
     </form>
     <p id="message"></p>
     <div id="entries"></div>
-    <div id="monthlyTotal"></div>
+
+    <!-- New Section to select month and see total hours -->
+    <div id="monthSelector">
+        <h3>Sélectionner un mois pour voir les heures totales :</h3>
+        <select id="monthSelect">
+            <option value="">Sélectionner un mois</option>
+            <option value="01">Janvier</option>
+            <option value="02">Février</option>
+            <option value="03">Mars</option>
+            <option value="04">Avril</option>
+            <option value="05">Mai</option>
+            <option value="06">Juin</option>
+            <option value="07">Juillet</option>
+            <option value="08">Août</option>
+            <option value="09">Septembre</option>
+            <option value="10">Octobre</option>
+            <option value="11">Novembre</option>
+            <option value="12">Décembre</option>
+        </select>
+        <div id="totalHoursForMonth" class="month-total"></div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBs2htpK...",
@@ -220,6 +240,25 @@
             }
         });
 
+        document.getElementById("monthSelect").addEventListener("change", function() {
+            let selectedMonth = this.value;
+            if (selectedMonth) {
+                loadTotalHoursForMonth(selectedMonth);
+            }
+        });
+
+        async function loadTotalHoursForMonth(month) {
+            const q = query(collection(db, "work_entries"), where("mois", "==", month));
+            const querySnapshot = await getDocs(q);
+            let totalHours = 0;
+            querySnapshot.forEach((doc) => {
+                let entry = doc.data();
+                totalHours += parseFloat(entry.total);
+            });
+
+            document.getElementById("totalHoursForMonth").innerText = `Total des heures pour ce mois: ${totalHours.toFixed(2)} heures`;
+        }
+
         async function loadEntries() {
             const querySnapshot = await getDocs(collection(db, "work_entries"));
             let entries = [];
@@ -229,7 +268,6 @@
                 entries.push(entry);
             });
             displayEntries(entries);
-            calculateMonthlyTotal(entries);
         }
 
         function displayEntries(entries) {
@@ -251,25 +289,6 @@
             });
             output += "</tbody></table>";
             document.getElementById("entries").innerHTML = output;
-        }
-
-        function calculateMonthlyTotal(entries) {
-            let totalByMonth = {};
-
-            entries.forEach(entry => {
-                let monthYear = new Date(entry.date).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
-                if (!totalByMonth[monthYear]) {
-                    totalByMonth[monthYear] = 0;
-                }
-                totalByMonth[monthYear] += parseFloat(entry.total);
-            });
-
-            let monthlyTotalOutput = "<div class='month-total'><h3>Total des heures par mois:</h3><ul>";
-            for (let monthYear in totalByMonth) {
-                monthlyTotalOutput += `<li>${monthYear}: ${totalByMonth[monthYear].toFixed(2)} heures</li>`;
-            }
-            monthlyTotalOutput += "</ul></div>";
-            document.getElementById("monthlyTotal").innerHTML = monthlyTotalOutput;
         }
 
         window.onload = loadEntries;
