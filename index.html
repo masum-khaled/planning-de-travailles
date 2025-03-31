@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificateur de Travail</title>
     <style>
+        /* Styling as before */
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #6e7dff, #58a6ff);
@@ -88,6 +89,14 @@
         .full-width {
             grid-column: span 2;
         }
+        .month-total {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            color: black;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +160,7 @@
     </form>
     <p id="message"></p>
     <div id="entries"></div>
+    <div id="monthlyTotal"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -212,14 +222,24 @@
 
         async function loadEntries() {
             const querySnapshot = await getDocs(collection(db, "work_entries"));
-            let output = "<h3>Entrées enregistrées</h3><table><thead><tr><th>Date</th><th>Jour</th><th>Lieu</th><th>Heure de début</th><th>Heure de fin</th><th>Total des heures</th></tr></thead><tbody>";
+            let entries = [];
             querySnapshot.forEach((doc) => {
                 let entry = doc.data();
+                entry.id = doc.id;
+                entries.push(entry);
+            });
+            displayEntries(entries);
+            calculateMonthlyTotal(entries);
+        }
+
+        function displayEntries(entries) {
+            let output = "<h3>Entrées enregistrées</h3><table><thead><tr><th>Date</th><th>Jour</th><th>Lieu</th><th>Heure de début</th><th>Heure de fin</th><th>Total des heures</th></tr></thead><tbody>";
+            entries.forEach(entry => {
                 let formattedDate = new Date(entry.date).toLocaleDateString('fr-FR', {
                     day: '2-digit', 
                     month: 'short', 
                     year: 'numeric'
-                }).replace('.', '');  // Remove the dot after month
+                }).replace('.', '');
                 output += `<tr>
                     <td>${formattedDate}</td>
                     <td>${entry.jour}</td>
@@ -231,6 +251,25 @@
             });
             output += "</tbody></table>";
             document.getElementById("entries").innerHTML = output;
+        }
+
+        function calculateMonthlyTotal(entries) {
+            let totalByMonth = {};
+
+            entries.forEach(entry => {
+                let monthYear = new Date(entry.date).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+                if (!totalByMonth[monthYear]) {
+                    totalByMonth[monthYear] = 0;
+                }
+                totalByMonth[monthYear] += parseFloat(entry.total);
+            });
+
+            let monthlyTotalOutput = "<div class='month-total'><h3>Total des heures par mois:</h3><ul>";
+            for (let monthYear in totalByMonth) {
+                monthlyTotalOutput += `<li>${monthYear}: ${totalByMonth[monthYear].toFixed(2)} heures</li>`;
+            }
+            monthlyTotalOutput += "</ul></div>";
+            document.getElementById("monthlyTotal").innerHTML = monthlyTotalOutput;
         }
 
         window.onload = loadEntries;
