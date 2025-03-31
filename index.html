@@ -42,12 +42,29 @@
             background-color: #6e7dff;
         }
         #entries {
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             background: white;
             padding: 20px;
             border-radius: 10px;
             color: black;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #58a6ff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
         }
     </style>
 </head>
@@ -148,12 +165,19 @@
 
         async function loadEntries() {
             const querySnapshot = await getDocs(collection(db, "work_entries"));
-            let output = "<h3>Entrées enregistrées</h3><ul>";
+            let output = "<h3>Entrées enregistrées</h3><table><thead><tr><th>Date</th><th>Jour</th><th>Lieu</th><th>Heure de début</th><th>Heure de fin</th><th>Total des heures</th></tr></thead><tbody>";
             querySnapshot.forEach((doc) => {
                 let entry = doc.data();
-                output += `<li>${entry.date} - ${entry.jour} - ${entry.lieu} (${entry.debut} à ${entry.fin}, ${entry.total} heures)</li>`;
+                output += `<tr>
+                    <td>${entry.date}</td>
+                    <td>${entry.jour}</td>
+                    <td>${entry.lieu}</td>
+                    <td>${entry.debut}</td>
+                    <td>${entry.fin}</td>
+                    <td>${entry.total} heures</td>
+                </tr>`;
             });
-            output += "</ul>";
+            output += "</tbody></table>";
             document.getElementById("entries").innerHTML = output;
         }
 
