@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planificateur de Travail</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
-
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -16,80 +11,48 @@
             margin: 0;
             padding: 0;
             color: #fff;
+            text-align: center;
         }
         h2 {
-            font-size: 30px;
-            font-weight: bold;
-            text-transform: uppercase;
-            text-align: center;
             margin-top: 30px;
-            letter-spacing: 2px;
         }
         form {
-            max-width: 700px;
-            margin: 40px auto;
-            background: #fff;
-            padding: 30px;
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            color: black;
         }
-        label {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        select, input[type="date"], input[type="text"], input[type="time"] {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease;
+        input, select {
             width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
         }
         button {
-            padding: 15px;
-            font-size: 18px;
-            cursor: pointer;
             background-color: #58a6ff;
             color: white;
+            padding: 10px;
             border: none;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
+            cursor: pointer;
+            border-radius: 5px;
         }
         button:hover {
             background-color: #6e7dff;
         }
-        .inline-block {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .inline-block input {
-            width: 30%;
-            min-width: 180px;
-        }
-        #message {
-            font-weight: bold;
-            margin-top: 15px;
-            text-align: center;
-        }
-        @media (max-width: 600px) {
-            .inline-block input, .inline-block select {
-                width: 100%;
-            }
+        #entries {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            color: black;
         }
     </style>
 </head>
 <body>
-
-    <h2><span id="monthName"></span> Planification de Khaled MASUM</h2>
-
+    <h2>Planificateur de Travail</h2>
     <form id="workForm">
         <label for="mois">Mois</label>
         <select id="mois" required>
@@ -108,42 +71,31 @@
             <option value="12">Décembre</option>
         </select>
 
-        <div class="inline-block">
-            <div>
-                <label for="date">Date</label>
-                <input type="date" id="date" required>
-            </div>
-            <div>
-                <label for="jour">Jour</label>
-                <input type="text" id="jour" placeholder="Jour" readonly>
-            </div>
-            <div>
-                <label for="lieu">Lieu</label>
-                <input type="text" id="lieu" placeholder="Lieu" required>
-            </div>
-            <div>
-                <label for="debut">Heure de début</label>
-                <input type="time" id="debut" required>
-            </div>
-            <div>
-                <label for="fin">Heure de fin</label>
-                <input type="time" id="fin" required>
-            </div>
-            <div>
-                <label for="total">Total des heures</label>
-                <input type="text" id="total" placeholder="Total Hours" readonly>
-            </div>
-        </div>
-
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
+        <label for="jour">Jour</label>
+        <input type="text" id="jour" readonly>
+        <label for="lieu">Lieu</label>
+        <input type="text" id="lieu" required>
+        <label for="debut">Heure de début</label>
+        <input type="time" id="debut" required>
+        <label for="fin">Heure de fin</label>
+        <input type="time" id="fin" required>
+        <label for="total">Total des heures</label>
+        <input type="text" id="total" readonly>
         <button type="submit">Soumettre</button>
     </form>
-
     <p id="message"></p>
+    <div id="entries"></div>
+    
+    <script type="module">
+        // Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-    <script>
-        // Firebase Configuration
+        // Your Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyBs2htpKSTndN2V4hM2CUaulSDcVKo1Njc",
+            apiKey: "AIzaSyBs2htpK...",
             authDomain: "planning-de-travail.firebaseapp.com",
             projectId: "planning-de-travail",
             storageBucket: "planning-de-travail.appspot.com",
@@ -153,43 +105,13 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        // Update Month Name in Title
-        document.getElementById("mois").addEventListener("change", function() {
-            let moisInput = this.value;
-            if (moisInput) {
-                let month = new Date("1970-" + moisInput + "-01").toLocaleString("fr-FR", { month: "long" });
-                document.getElementById("monthName").innerText = month;
-                this.dataset.monthName = month;
-            }
-        });
-
-        // Update Day of the Week when Date Changes
-        document.getElementById("date").addEventListener("change", function() {
-            let dateValue = new Date(this.value);
-            document.getElementById("jour").value = dateValue.toLocaleDateString("fr-FR", { weekday: 'long' });
-        });
-
-        // Calculate Total Hours
-        function calculateTotalHours() {
-            let debut = document.getElementById("debut").value;
-            let fin = document.getElementById("fin").value;
-            if (debut && fin) {
-                let diff = (new Date("1970-01-01T" + fin) - new Date("1970-01-01T" + debut)) / (1000 * 60 * 60);
-                document.getElementById("total").value = diff.toFixed(2);
-            }
-        }
-        document.getElementById("debut").addEventListener("change", calculateTotalHours);
-        document.getElementById("fin").addEventListener("change", calculateTotalHours);
-
-        // Submit Form Data to Firestore
-        document.getElementById("workForm").addEventListener("submit", function(event) {
+        document.getElementById("workForm").addEventListener("submit", async function(event) {
             event.preventDefault();
-
             let data = {
-                mois: document.getElementById("mois").dataset.monthName,
+                mois: document.getElementById("mois").value,
                 date: document.getElementById("date").value,
                 jour: document.getElementById("jour").value,
                 lieu: document.getElementById("lieu").value,
@@ -198,12 +120,41 @@
                 total: document.getElementById("total").value
             };
 
-            db.collection("work_entries").add(data).then(() => {
+            try {
+                await addDoc(collection(db, "work_entries"), data);
                 document.getElementById("message").innerText = "Données ajoutées avec succès !";
-                document.getElementById("message").style.color = "green";
-                document.getElementById("workForm").reset();
-            });
+                loadEntries();
+            } catch (error) {
+                document.getElementById("message").innerText = "Erreur: " + error.message;
+            }
         });
+
+        async function loadEntries() {
+            const querySnapshot = await getDocs(collection(db, "work_entries"));
+            let output = "<h3>Entrées enregistrées</h3><ul>";
+            let csvContent = "Date,Jour,Lieu,Début,Fin,Total Heures\n";
+            
+            querySnapshot.forEach((doc) => {
+                let entry = doc.data();
+                output += `<li>${entry.date} - ${entry.jour} - ${entry.lieu} (${entry.debut} à ${entry.fin}, ${entry.total} heures)</li>`;
+                csvContent += `${entry.date},${entry.jour},${entry.lieu},${entry.debut},${entry.fin},${entry.total}\n`;
+            });
+            
+            output += "</ul><button onclick='downloadCSV()'>Télécharger CSV</button>";
+            document.getElementById("entries").innerHTML = output;
+            localStorage.setItem("csvData", csvContent);
+        }
+
+        function downloadCSV() {
+            let csvData = localStorage.getItem("csvData");
+            let blob = new Blob([csvData], { type: "text/csv" });
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "work_entries.csv";
+            a.click();
+        }
+
+        window.onload = loadEntries;
     </script>
 </body>
 </html>
